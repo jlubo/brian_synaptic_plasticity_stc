@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# run all tests with console output
+#pytest ./test_brianSynapseBasic.py -s
+
+# run all tests with line coverage output
+coverage run -m pytest ./test_brianSynapseBasic.py
+coverage report -m --omit=/usr/* > test_coverage.txt
