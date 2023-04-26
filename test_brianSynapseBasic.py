@@ -39,7 +39,7 @@ def test_basic(paradigm, record_spikes, record_neuron_traces, config_file):
 	func_name = inspect.getframeinfo(inspect.currentframe()).function
 
 	# run simulation
-	data_path_trial = bsb.simulate(config, data_dir, record_spikes = record_spikes, record_neuron_traces = record_neuron_traces)
+	data_path_trial = bsb.simulate(config_file, data_dir, record_spikes = record_spikes, record_neuron_traces = record_neuron_traces)
 
 	# retrieve the data
 	data_stacked = np.loadtxt(os.path.join(data_path_trial, "traces.txt"))

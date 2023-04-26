@@ -13,7 +13,6 @@
 ### Imports and initialization ###
 
 import os
-import json
 from brianSynapseBasic import simulate
 from averageFileColumnsAdvanced import averageFileColumns
 
@@ -26,7 +25,6 @@ from averageFileColumnsAdvanced import averageFileColumns
 # - trials_per_batch: number of trials per batch
 def runSimulationBatches(protocol, num_batches, trials_per_batch):
 	config_file = f"config_{protocol}.json" # file containing the parameter configuration
-	config = json.load(open(config_file, "r")) # load JSON object containing the parameter configuration as dictionary
 	data_root = f"./brian-heun_data_{protocol}_10x100"
 	data_path_averaged = f"{data_root}/averaged_traces"
 
@@ -43,7 +41,7 @@ def runSimulationBatches(protocol, num_batches, trials_per_batch):
 		for trial in range(trials_per_batch):
 			print("--------------------------------------------")
 			print(f"Batch {batch_name}, trial {trial + 1}:")
-			simulate(config, data_path_batch)
+			simulate(config_file, data_path_batch)
 
 		# average traces over time
 		# columns: 1: Time, 2: V(0), 4: h(1,0), 5: z(1,0), 6: Ca(1,0), 7: p^C(0)

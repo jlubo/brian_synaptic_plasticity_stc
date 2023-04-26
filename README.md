@@ -8,11 +8,24 @@ The simulation reproduces the outcome of a stand-alone simulator (see [this](htt
 
 ### Usage
 
-Brian 2 needs to be installed (see [here](https://briansimulator.org/install/)).
+First of all, [Brian 2](https://briansimulator.org/) needs to be installed:
+```
+pip install brian2
+```
 
 To run the simulations and average over trials and batches, execute
 ```
 python3 run.py
+```
+
+To run a single specific simulation, e.g., for late-phase dynamics, execute
+```
+python3 -c "import brianSynapseBasic as bsb; bsb.simulate('config_basic_early.json', '.', record_spikes = True)"
+```
+
+For tests and to obtain the line coverage, [pytest](https://pytest.org/) and [coverage.py](https://coverage.readthedocs.io/) need to be installed:
+```
+pip install -U pytest pytest-cov coverage
 ```
 
 To run tests and determine the test coverage for the main module, execute

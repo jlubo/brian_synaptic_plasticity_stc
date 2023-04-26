@@ -62,17 +62,19 @@ def writeLog(*ostrs, prnt = True):
 # simulate
 # Simulates a single neuron with a single input synapse 
 # (to be used with basic protocol to induce early-phase potentiation)
-# - config: configuration of model and simulation parameters (as a dictionary from JSON format)
+# - config_file: name of the configuration file
 # - data_dir: name of the data directory
 # - record_spikes [optional]: specifies if spikes should be recorded
 # - record_neuron_traces [optional]: specifies if traces of neuronal (excluding synaptic) variables should be recorded
 # - return: the path of the trial's data
-def simulate(config, data_dir, record_spikes = False, record_neuron_traces = True):
+def simulate(config_file, data_dir, record_spikes = False, record_neuron_traces = True):
 
 	#########################################################
 	### Initialization ###
 	b.device.reinit()
 	b.device.activate()
+
+	config = json.load(open(config_file, "r")) # load JSON object containing the parameter configuration as dictionary
 
 	data_path_trial = os.path.join(data_dir, waitGetTimestamp(refresh = True) + "_data")
 	if not os.path.isdir(data_path_trial):
@@ -178,7 +180,6 @@ def simulate(config, data_dir, record_spikes = False, record_neuron_traces = Tru
 	mean_I_learn = N_stim*f_stim*second*h_0/R_mem
 	stdev_I_learn = np.sqrt(N_stim*f_stim)*second*h_0/R_mem/np.sqrt(2*tau_OU)
 	neur_pop.I_learn = mean_I_learn # initialize stimulus current at mean value
-	#writeLog(f"Learning current: mean = {mean_I_learn}; st. dev. = {stdev_I_learn}")
 	writeLog(f"Learning current: mean = {mean_I_learn}; st. dev. = {stdev_I_learn}")
 	if record_spikes:
 		spike_mon = b.SpikeMonitor(neur_pop)
@@ -207,11 +208,8 @@ def simulate(config, data_dir, record_spikes = False, record_neuron_traces = Tru
 	syn_neur_pop.pre_calcium.delay = t_Ca_delay
 	syn_state_mon = b.StateMonitor(syn_neur_pop, ['h', 'z', 'Ca'], record=[0], dt=delta_t_sample)
 
-	#b.device.activate(directory="output", compile=True, run=True, build_on_run=True, debug=False)
-
 	b.defaultclock.dt = delta_t
 	b.run(t_max, report="text", report_period=60*second)
-	#b.device.build(directory="output", compile=True, run=True, debug=False)
 
 	#########################################################
 	### Storing the data in files ###
@@ -283,25 +281,25 @@ def simulate(config, data_dir, record_spikes = False, record_neuron_traces = Tru
 
 	# Synaptic calcium amount and protein amount of neuron 0
 	b.plt.figure(figsize=(12,4))
-	b.plt.plot(syn_state_mon.t/msecond, syn_state_mon.Ca[0], c="#c8c896")
+	b.plt.plot(syn_state_mon.t/msecond, syn_state_mon.Ca[0], label='Calcium', c="#c8c896")
 	if record_neuron_traces:
-		b.plt.plot(syn_state_mon.t/msecond, neur_state_mon.p[0], c="#008000")
+		b.plt.plot(syn_state_mon.t/msecond, neur_state_mon.p[0], label='Protein', c="#008000")
 	b.plt.xlabel('Time (ms)')
 	b.plt.ylabel('Calcium or protein amount');
 	#b.plt.xlim(-0.01/msecond, 0.06/msecond)
 	if record_spikes and t_max < 30*second:
 		for t in spike_mon.t:
 			b.plt.axvline(t/msecond, ls='dotted', c="purple", alpha=0.4) # dotted line indicating spikes
-	b.plt.axhline(theta_p, ls='dotted', c='#969664')
-	b.plt.axhline(theta_d, ls='dotted', c='#969696')
-
+	b.plt.axhline(theta_p, ls='dotted', label=r'$\theta$_p', c='#969664')
+	b.plt.axhline(theta_d, ls='dotted', label=r'$\theta$_d', c='#969696')
+	b.plt.legend(loc="upper right")
 	b.plt.savefig(os.path.join(data_path_trial, 'traces_calcium_protein.png'), dpi=800)
 	b.plt.close()
 		
 	# Early-/late-phase synaptic weight
 	b.plt.figure(figsize=(12,4))
-	b.plt.plot(syn_state_mon.t/msecond, syn_state_mon.h[0]/h_0*100, c="#800000")
-	b.plt.plot(syn_state_mon.t/msecond, (syn_state_mon.z[0]+1)*100, c="#1f77b4")
+	b.plt.plot(syn_state_mon.t/msecond, syn_state_mon.h[0]/h_0*100, label='Early-phase', c="#800000")
+	b.plt.plot(syn_state_mon.t/msecond, (syn_state_mon.z[0]+1)*100, label='Late-phase', c="#1f77b4")
 	b.plt.xlabel('Time (ms)')
 	b.plt.ylabel('Synaptic weight (%)');
 	#b.plt.xlim(-0.01/msecond, 0.06/msecond)
@@ -309,7 +307,7 @@ def simulate(config, data_dir, record_spikes = False, record_neuron_traces = Tru
 		for t in spike_mon.t:
 			b.plt.axvline(t/msecond, ls='dotted', c="purple", alpha=0.4) # dotted line indicating spikes
 	#b.plt.axhline(h_0/mvolt, ls='dotted', c='C2')
-
+	b.plt.legend(loc="upper right")
 	b.plt.savefig(os.path.join(data_path_trial, 'traces_weight.png'), dpi=800)
 	b.plt.close()
 
