@@ -25,7 +25,7 @@ from averageFileColumnsAdvanced import averageFileColumns
 # - trials_per_batch: number of trials per batch
 def runSimulationBatches(protocol, num_batches, trials_per_batch):
 	config_file = f"config_{protocol}.json" # file containing the parameter configuration
-	data_root = f"./brian-heun_data_{protocol}_10x100"
+	data_root = f"./brian-heun_data_{protocol}_{num_batches}x{trials_per_batch}"
 	data_path_averaged = f"{data_root}/averaged_traces"
 
 	# for each batch, run a certain number of trials and then average the data traces over time
@@ -48,8 +48,10 @@ def runSimulationBatches(protocol, num_batches, trials_per_batch):
 		averageFileColumns(f'{data_path_averaged}/{batch_name}.txt', data_path_batch, 'data', [], 'traces.txt', [2,4,5,6,7], skip_first_line=False, col_sep=' ')
 
 	# average mean and variance over batches; also cf. Kloeden and Platen (1995)
-	# columns: 1: Time, 2: mean of V(0), 3: std. dev. of V(0), 4: mean of h(1,0), 5: std. dev. of h(1,0), 8: mean of Ca(1,0), 9: std. dev. of Ca(1,0)
-	averageFileColumns(f'{data_root}/meta_averaged_traces.txt', data_root, 'averaged_traces', [], '.txt', [2,3,4,5,8,9], skip_first_line=False, col_sep=' ')
+	# columns: 1: Time, 2: mean of V(0), 3: std. dev. of V(0), 4: mean of h(1,0), 5: std. dev. of h(1,0), 
+	#          6: mean of z(1,0), 7: std. dev. of z(1,0), 8: mean of Ca(1,0), 9: std. dev. of Ca(1,0),
+	#          10: mean of p^C(0), 11: std. dev. of p^C(0)
+	averageFileColumns(f'{data_root}/meta_averaged_traces.txt', data_root, 'averaged_traces', [], '.txt', [2,4,6,8,10], skip_first_line=False, col_sep=' ')
 
 #########################################################
 ### Basic early-phase dynamics

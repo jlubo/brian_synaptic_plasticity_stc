@@ -18,6 +18,11 @@ To run the simulations and average over trials and batches, execute
 python3 run.py
 ```
 
+To plot the results produced by the previous step, execute
+```
+python3 plot.py
+```
+
 To run a single specific simulation, e.g., for late-phase dynamics, execute
 ```
 python3 -c "import brianSynapseBasic as bsb; bsb.simulate('config_basic_early.json', '.', record_spikes = True)"
@@ -32,3 +37,15 @@ To run tests and determine the test coverage for the main module, execute
 ```
 source run_tests
 ```
+
+### Results
+
+#### Basic early-phase dynamics
+Averaged over 10 batches with 100 trials each, the mean across batches is shown (computed from the mean across trials); error bands show the standard deviation across batches.
+
+![Basic early-phase dynamics](basic_early_10x100.png)
+
+#### Basic late-phase dynamics
+Averaged over 10 batches with 10 trials each, the mean across batches is shown (computed from the mean across trials); error bands show the standard deviation across batches.
+
+![Basic late-phase dynamics](basic_late_10x10.png)
