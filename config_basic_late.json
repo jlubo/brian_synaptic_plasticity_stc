@@ -8,8 +8,8 @@
 		"output_period" : 100,
 		"learn_protocol": {
 			"scheme": "RECT",
+			"receivers" : [ 0 ],
 			"explicit_input" : {
-				"receivers" : [ ],
 				"stim_times" : [ ]
 			},
 			"time_start": 0,
@@ -53,7 +53,7 @@
 			"theta_d" : 1.2,
 			"gamma_p" : 1645.6,
 			"gamma_d" : 313.1,
-            "sigma_pl" : 2.90436
+			"sigma_pl" : 2.90436
 		},
 		"protein" : 
 		{

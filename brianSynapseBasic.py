@@ -93,13 +93,13 @@ def simulate(config_file, data_dir, record_spikes = False, record_neuron_traces 
 	delta_t = config["simulation"]["dt"]*msecond # duration of one timestep for simulating
 	delta_t_sample = config["simulation"]["output_period"]*config["simulation"]["dt"]*msecond # duration of one timestep for sampling
 	
+	#stim_protocol = config["simulation"]["learn_protocol"]["scheme"] # the name of the stimulation protocol (currently not used)
+	stim_receivers = config["simulation"]["learn_protocol"]["receivers"] # neurons receiving stimulation
+	explicit_stim_times = config["simulation"]["learn_protocol"]["explicit_input"]["stim_times"] # timing of explicit stimulus pulses
 	t_stim_start = config["simulation"]["learn_protocol"]["time_start"]*second # beginning of fluctuating input stimulation
 	t_stim_end = t_stim_start + config["simulation"]["learn_protocol"]["duration"]*second # end of fluctuating input stimulation
 	f_stim = config["simulation"]["learn_protocol"]["freq"]*hertz # mean firing rate of the putative input population
 	N_stim = config["simulation"]["learn_protocol"]["N_stim"] # number of neurons in the putative input population
-
-	explicit_stim_receivers = config["simulation"]["learn_protocol"]["explicit_input"]["receivers"] # neurons receiving explicit stimulus pulses
-	explicit_stim_times = config["simulation"]["learn_protocol"]["explicit_input"]["stim_times"] # timing of explicit stimulus pulses
 
 	# Neuron parameters
 	R_mem = config["neuron"]["R_leak"]*Mohm
@@ -142,7 +142,8 @@ def simulate(config_file, data_dir, record_spikes = False, record_neuron_traces 
 	neuron_eqs = '''
 	dV/dt = ( -(V - V_rev) + V_psp + R_mem*(I_bg + I_learn) ) / tau_mem: volt (unless refractory)
 	dI_bg/dt = ( -I_bg + I_0 + sigma_wn*xi_bg ) / tau_OU : amp
-	dI_learn/dt = ( -I_learn + int(t >= t_stim_start)*int(t < t_stim_end)*(N_stim*f_stim + sqrt(N_stim*f_stim)*xi_stim) * second*h_0/R_mem ) / tau_OU : amp
+	learn : boolean
+	dI_learn/dt = int(learn)*( -I_learn + int(t >= t_stim_start)*int(t < t_stim_end)*(N_stim*f_stim + sqrt(N_stim*f_stim)*xi_stim) * second*h_0/R_mem ) / tau_OU : amp
 	sum_h_diff : volt
 	dp/dt = ( -p + alpha_c*0.5*(1+sign(sum_h_diff - theta_pro_c)) ) / tau_pro_c : 1
 	dV_psp/dt = -V_psp / tau_syn : volt
@@ -177,18 +178,23 @@ def simulate(config_file, data_dir, record_spikes = False, record_neuron_traces 
 	neur_pop.I_bg = I_0 # initialize background current at mean value
 	writeLog(f"Backgrund current: mean = {I_0}; st. dev. = {sigma_wn/np.sqrt(2*tau_OU)}")
 
+	
+	writeLog(f"Neurons receiving stimulation: {stim_receivers}")
+
 	mean_I_learn = N_stim*f_stim*second*h_0/R_mem
 	stdev_I_learn = np.sqrt(N_stim*f_stim)*second*h_0/R_mem/np.sqrt(2*tau_OU)
-	neur_pop.I_learn = mean_I_learn # initialize stimulus current at mean value
+	neur_pop[:].learn = False # set learning stimulus for specified neurons
+	neur_pop[stim_receivers].learn = True # set learning stimulus for specified neurons
+	neur_pop[stim_receivers].I_learn = mean_I_learn # initialize stimulus current at mean value
 	writeLog(f"Learning current: mean = {mean_I_learn}; st. dev. = {stdev_I_learn}")
 	if record_spikes:
 		spike_mon = b.SpikeMonitor(neur_pop)
 	if record_neuron_traces:
 		neur_state_mon = b.StateMonitor(neur_pop, ['V', 'p'], record=[0,1], dt=delta_t_sample)
 
-	spike_gen_indices = explicit_stim_receivers*len(explicit_stim_times) # 0: index of the neuron in SpikeGeneratorGroup
+	spike_gen_indices = stim_receivers*len(explicit_stim_times) # 0: index of the neuron in SpikeGeneratorGroup
 	spike_gen_times = explicit_stim_times*msecond # spike times
-	writeLog(f"Explicit stimulation: spike_gen_indices = {spike_gen_indices}; spike_gen_times = {spike_gen_times}")
+	writeLog(f"Explicit stimulation times: {spike_gen_times}")
 
 	#spike_gen = b.SpikeGeneratorGroup(1,[],[]*second)
 	spike_gen = b.SpikeGeneratorGroup(1, spike_gen_indices, spike_gen_times) # one spike-generating neuron

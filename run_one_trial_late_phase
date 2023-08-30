@@ -1,0 +1,3 @@
+#!/bin/sh
+
+python3 -c "import brianSynapseBasic as bsb; bsb.simulate('config_basic_late.json', '.', record_spikes = True)"
