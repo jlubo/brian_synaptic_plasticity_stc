@@ -4,7 +4,7 @@ This code implements a single current-based synapse which can undergo early-phas
 
 The early-phase dynamics are driven by neuronal spiking activity, and the late-phase dynamics depend on the early-phase through tag setting and protein synthesis (see [Luboeinski and Tetzlaff, 2021](https://doi.org/10.1038/s42003-021-01778-y), for details).
 
-The simulation reproduces the outcome of a stand-alone simulator (see [this](https://github.com/jlubo/memory-consolidation-stc) repo) and of the Arbor simulator (see [this](https://github.com/jlubo/arbor_2N1S) repo).
+The simulation reproduces the outcome of a stand-alone simulator (see [this](https://github.com/jlubo/memory-consolidation-stc) repo) and of the Arbor simulator (see [this](https://github.com/jlubo/arbor_network_consolidation) repo).
 
 ### Usage
 
@@ -15,7 +15,7 @@ pip install brian2
 
 To run the simulations and average over trials and batches, execute
 ```
-python3 run.py
+python3 runBatchesBasic.py
 ```
 
 To plot the results produced by the previous step, execute
@@ -23,9 +23,10 @@ To plot the results produced by the previous step, execute
 python3 plot.py
 ```
 
-To run a single specific simulation, e.g., for late-phase dynamics, execute
+To run a single specific simulation of early- or late-phase dynamics, respectively, execute
 ```
-python3 -c "import brianSynapseBasic as bsb; bsb.simulate('config_basic_early.json', '.', record_spikes = True)"
+source run_one_trial_early_phase
+source run_one_trial_late_phase
 ```
 
 For tests and to obtain the line coverage, [pytest](https://pytest.org/) and [coverage.py](https://coverage.readthedocs.io/) need to be installed:

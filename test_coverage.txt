@@ -1,6 +1,6 @@
 Name                        Stmts   Miss  Cover   Missing
 ---------------------------------------------------------
-brianSynapseBasic.py          170      0   100%
+brianSynapseBasic.py          175      0   100%
 test_brianSynapseBasic.py      47      0   100%
 ---------------------------------------------------------
-TOTAL                         217      0   100%
+TOTAL                         222      0   100%

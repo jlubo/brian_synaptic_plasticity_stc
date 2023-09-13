@@ -51,13 +51,12 @@ def runSimulationBatches(protocol, num_batches, trials_per_batch):
 	# columns: 1: Time, 2: mean of V(0), 3: std. dev. of V(0), 4: mean of h(1,0), 5: std. dev. of h(1,0), 
 	#          6: mean of z(1,0), 7: std. dev. of z(1,0), 8: mean of Ca(1,0), 9: std. dev. of Ca(1,0),
 	#          10: mean of p^C(0), 11: std. dev. of p^C(0)
-	averageFileColumns(f'{data_root}/meta_averaged_traces.txt', data_root, 'averaged_traces', [], '.txt', [2,4,6,8,10], skip_first_line=False, col_sep=' ')
+	averageFileColumns(f'{data_root}/meta_mean_averaged_traces.txt', data_root, 'averaged_traces', [], '.txt', [2,4,6,8,10], skip_first_line=False, col_sep=' ') # mean averaging
+	averageFileColumns(f'{data_root}/meta_stdev_averaged_traces.txt', data_root, 'averaged_traces', [], '.txt', [3,5,7,9,11], skip_first_line=False, col_sep=' ') # std.dev. averaging
 
 #########################################################
-### Basic early-phase dynamics
-runSimulationBatches("basic_early", 10, 100)
-
-#########################################################
-### Basic late-phase dynamics
-runSimulationBatches("basic_late", 10, 10)
+### Basic early- and late-phase dynamics
+if __name__ == "__main__":
+	runSimulationBatches("basic_early", 10, 100)
+	runSimulationBatches("basic_late", 10, 10)
 
