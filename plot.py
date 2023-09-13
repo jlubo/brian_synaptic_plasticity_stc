@@ -96,8 +96,11 @@ def plotMeanAndSD(config, data_stacked,
 #####################################
 if __name__ == '__main__':
 	for (protocol, num_trials) in [("basic_early", 100), ("basic_late", 10)]:
-		config = json.load(open(f"config_{protocol}.json", "r"))
-		data_stacked_brian = np.loadtxt(f'brian-heun_data_{protocol}_10x{num_trials}/meta_averaged_traces.txt')
-		plotMeanAndSD(config, data_stacked_brian,
-			          X_cols = {"voltage": 1, "weight-e": 3, "weight-l": 5, "calcium": 7, "protein": 9}, store_path = f"./{protocol}_10x{num_trials}.png")
-	
+		try:
+			config = json.load(open(f"config_{protocol}.json", "r"))
+			data_stacked_brian = np.loadtxt(f'brian-heun_data_{protocol}_10x{num_trials}/meta_mean_averaged_traces.txt')
+			plotMeanAndSD(config, data_stacked_brian,
+					      X_cols = {"voltage": 1, "weight-e": 3, "weight-l": 5, "calcium": 7, "protein": 9}, store_path = f"./{protocol}_10x{num_trials}.png")
+		except:
+			print(f"An error occurred tried to plot '{basic_early}' data.")
+		

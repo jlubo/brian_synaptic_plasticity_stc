@@ -23,7 +23,13 @@ To plot the results produced by the previous step, execute
 python3 plot.py
 ```
 
-To run a single specific simulation of early- or late-phase dynamics, respectively, execute
+Alternatively, you can run batches of early- or late-phase simulations, respectively, via
+```
+source run_batch_basic_early
+source run_batch_basic_late
+```
+
+To run a single simulation of early- or late-phase dynamics, execute, respectively
 ```
 source run_one_trial_early_phase
 source run_one_trial_late_phase

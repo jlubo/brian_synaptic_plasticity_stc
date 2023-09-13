@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# run the simulations
+python3 -c "import runBatchesBasic as r; r.runSimulationBatches('basic_early', 10, 100)"
+
+# create plots
+python3 "plot.py"

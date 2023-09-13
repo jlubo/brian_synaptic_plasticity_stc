@@ -23,29 +23,32 @@ from averageFileColumnsAdvanced import averageFileColumns
 # - protocol: name of the protocol to be used (according '*.json' configuration, file must exist)
 # - num_batches: number of batches
 # - trials_per_batch: number of trials per batch
-def runSimulationBatches(protocol, num_batches, trials_per_batch):
+# - only_average [optional]: if True, only do averaging over batches
+def runSimulationBatches(protocol, num_batches, trials_per_batch, only_average = False):
 	config_file = f"config_{protocol}.json" # file containing the parameter configuration
 	data_root = f"./brian-heun_data_{protocol}_{num_batches}x{trials_per_batch}"
 	data_path_averaged = f"{data_root}/averaged_traces"
 
-	# for each batch, run a certain number of trials and then average the data traces over time
-	for batch in range(num_batches):
-		batch_name = str(batch + 1)
-		data_path_batch = os.path.join(data_root, batch_name)
+	if not only_average:
 
-		os.makedirs(data_path_batch) # create data directory and intermediates; an error is thrown if the directory exists already
-		if not os.path.exists(data_path_averaged):
-			os.mkdir(data_path_averaged) # create directory for averaged data
+		# for each batch, run a certain number of trials and then average the data traces over time
+		for batch in range(num_batches):
+			batch_name = str(batch + 1)
+			data_path_batch = os.path.join(data_root, batch_name)
 
-		# simulate trials
-		for trial in range(trials_per_batch):
-			print("--------------------------------------------")
-			print(f"Batch {batch_name}, trial {trial + 1}:")
-			simulate(config_file, data_path_batch)
+			os.makedirs(data_path_batch) # create data directory and intermediates; an error is thrown if the directory exists already
+			if not os.path.exists(data_path_averaged):
+				os.mkdir(data_path_averaged) # create directory for averaged data
 
-		# average traces over time
-		# columns: 1: Time, 2: V(0), 4: h(1,0), 5: z(1,0), 6: Ca(1,0), 7: p^C(0)
-		averageFileColumns(f'{data_path_averaged}/{batch_name}.txt', data_path_batch, 'data', [], 'traces.txt', [2,4,5,6,7], skip_first_line=False, col_sep=' ')
+			# simulate trials
+			for trial in range(trials_per_batch):
+				print("--------------------------------------------")
+				print(f"Batch {batch_name}, trial {trial + 1}:")
+				simulate(config_file, data_path_batch)
+
+			# average traces over time
+			# columns: 1: Time, 2: V(0), 4: h(1,0), 5: z(1,0), 6: Ca(1,0), 7: p^C(0)
+			averageFileColumns(f'{data_path_averaged}/{batch_name}.txt', data_path_batch, 'data', [], 'traces.txt', [2,4,5,6,7], skip_first_line=False, col_sep=' ')
 
 	# average mean and variance over batches; also cf. Kloeden and Platen (1995)
 	# columns: 1: Time, 2: mean of V(0), 3: std. dev. of V(0), 4: mean of h(1,0), 5: std. dev. of h(1,0), 
@@ -58,5 +61,7 @@ def runSimulationBatches(protocol, num_batches, trials_per_batch):
 ### Basic early- and late-phase dynamics
 if __name__ == "__main__":
 	runSimulationBatches("basic_early", 10, 100)
+	#runSimulationBatches("basic_early", 10, 100, only_average = True)
 	runSimulationBatches("basic_late", 10, 10)
+	#runSimulationBatches("basic_late", 10, 10, only_average = True)
 
